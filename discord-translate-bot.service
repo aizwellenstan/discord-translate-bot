@@ -1,0 +1,12 @@
+[Unit]
+Description=discord-translate-bot
+After=network.target
+
+[Service]
+User=ubuntu
+ExecStart=/home/ubuntu/discord-translate-bot/start.sh
+Restart=no
+Type=simple
+
+[Install]
+WantedBy=multi-user.target
