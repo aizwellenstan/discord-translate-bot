@@ -15,11 +15,11 @@ intents.guilds = True
 bot = discord.Client(intents=intents)
 translator = Translator()
 
-def log(user, server, channel, source_lang, target_lang, translateMe, result):
+def log(user, server, channel, target_lang, translateMe, result):
     with open('./log.csv', 'a', encoding='UTF8', newline='') as f:
         now = datetime.now() - timedelta(hours=5)
         now = now.strftime("%Y-%m-%d %H:%M:%S")
-        row = [now, user, server, channel, source_lang, target_lang, translateMe, result]
+        row = [now, user, server, channel, target_lang, translateMe, result]
         writer = csv.writer(f)
         writer.writerow(row)
 
@@ -41,29 +41,31 @@ async def on_message(message):
     server = message.guild.name if message.guild else "DM"
     user = message.author.name
     
-    if emoji.demojize(content).isascii():
-        source_lang = 'en'
-        target_langs = ['ja', 'zh-tw']
-    elif any('\u4e00' <= ch <= '\u9fff' for ch in content):
-        source_lang = 'zh-tw'
-        target_langs = ['en', 'ja']
-    else:
-        source_lang = 'ja'
-        target_langs = ['en', 'zh-tw']
-    
+    target_langs = ['ja', 'zh-tw', 'en']
+
+    # # Language Detection
+    # if any('\u3040' <= ch <= '\u30ff' or '\u4e00' <= ch <= '\u9fff' for ch in content):  # Japanese (Hiragana, Katakana, Kanji)
+    #     source_lang = 'ja'
+    #     target_langs = ['en', 'zh-tw']
+    # elif any('\u4e00' <= ch <= '\u9fff' for ch in content):  # Chinese
+    #     source_lang = 'zh-tw'
+    #     target_langs = ['en', 'ja']
+    # else:  # Default to English
+    #     source_lang = 'en'
+    #     target_langs = ['ja', 'zh-tw']
+
     results = []
     for target_lang in target_langs:
         try:
-            result = await translator.translate(content, src=source_lang, dest=target_lang)
-            result_text = result.text  # Extract the translated text
+            result = await translator.translate(content, dest=target_lang)
+            result_text = result.text  # Extract translated text
             results.append(f"**{target_lang.upper()}:** {result_text}")
-            log(user, server, channel, source_lang, target_lang, content, result_text)
+            log(user, server, channel, target_lang, content, result_text)
         except Exception as e:
             errMsg = f"Translation to {target_lang} failed. Error: {e}"
             print("Error:", errMsg)
             results.append(errMsg)
-            log(user, server, channel, source_lang, target_lang, content, errMsg)
-
+            log(user, server, channel, target_lang, content, errMsg)
     
     if results:
         await message.reply("\n".join(results))
