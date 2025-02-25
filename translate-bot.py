@@ -6,6 +6,7 @@ import discord
 from keep_alive import keep_alive
 from datetime import datetime, timedelta
 from googletrans import Translator
+import re
 from secret import TOKEN
 
 intents = discord.Intents.all()
@@ -46,11 +47,17 @@ async def on_message(message):
     
     # Check if the bot is mentioned in the message
     if bot.user.mentioned_in(message):
+        # Remove the bot's mention from the content (regex will match the bot's mention pattern)
+        content_without_mention = re.sub(r"<@!?(\d+)>", "", content).strip()  # Remove bot mention
+        
         # Create a thread from the message and send reply in it
         if message.channel.type == discord.ChannelType.text:
             try:
+                # Use the original message content (without mention) as the thread's name
+                thread_name = content_without_mention[:100]  # Limit to 100 characters (Discord's limit for thread names)
+                
                 # Create a thread from the original message
-                thread = await message.create_thread(name="New Thread", auto_archive_duration=60)
+                thread = await message.create_thread(name=thread_name, auto_archive_duration=60)
                 
                 # Send the translated response in the newly created thread
                 results = []
@@ -92,11 +99,9 @@ async def on_message(message):
             # If it's in a thread, reply in the thread
             if message.thread:
                 await message.thread.send(content="\n".join(results))
-            """
-            else:
-                # Otherwise, reply in the main channel
-                await message.reply(content="\n".join(results))
-            """
+            # else:
+            #     # Otherwise, reply in the main channel
+            #     await message.reply(content="\n".join(results))
 
 keep_alive()
 try:
