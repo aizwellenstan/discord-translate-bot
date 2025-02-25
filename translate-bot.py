@@ -43,17 +43,6 @@ async def on_message(message):
     
     target_langs = ['ja', 'zh-tw', 'en']
 
-    # # Language Detection
-    # if any('\u3040' <= ch <= '\u30ff' or '\u4e00' <= ch <= '\u9fff' for ch in content):  # Japanese (Hiragana, Katakana, Kanji)
-    #     source_lang = 'ja'
-    #     target_langs = ['en', 'zh-tw']
-    # elif any('\u4e00' <= ch <= '\u9fff' for ch in content):  # Chinese
-    #     source_lang = 'zh-tw'
-    #     target_langs = ['en', 'ja']
-    # else:  # Default to English
-    #     source_lang = 'en'
-    #     target_langs = ['ja', 'zh-tw']
-
     results = []
     for target_lang in target_langs:
         try:
@@ -68,7 +57,8 @@ async def on_message(message):
             log(user, server, channel, target_lang, content, errMsg)
     
     if results:
-        await message.reply("\n".join(results))
+        # Edit the original message with the translated results
+        await message.edit(content="\n".join(results))
 
 keep_alive()
 try:
