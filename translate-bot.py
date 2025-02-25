@@ -57,7 +57,13 @@ async def on_message(message):
                 thread_name = content_without_mention[:100]  # Limit to 100 characters (Discord's limit for thread names)
                 
                 # Create a thread from the original message
-                thread = await message.create_thread(name=thread_name, auto_archive_duration=60)
+                """
+                60: 1 hour
+                1440: 1 day (24 hours)
+                4320: 3 days
+                10080: 7 days
+                """
+                thread = await message.create_thread(name=thread_name, auto_archive_duration=40320)
                 
                 # Send the translated response in the newly created thread
                 results = []
