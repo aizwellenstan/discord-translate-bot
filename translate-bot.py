@@ -50,20 +50,17 @@ async def on_message(message):
         # Remove the bot's mention from the content (regex will match the bot's mention pattern)
         content_without_mention = re.sub(r"<@!?(\d+)>", "", content).strip()  # Remove bot mention
         
+        # Trim the title to only the first line (split by newline and take the first part)
+        first_line = content_without_mention.split('\n')[0]  # Take only the first line of the message
+        
         # Create a thread from the message and send reply in it
         if message.channel.type == discord.ChannelType.text:
             try:
-                # Use the original message content (without mention) as the thread's name
-                thread_name = content_without_mention[:100]  # Limit to 100 characters (Discord's limit for thread names)
+                # Use the first line of the message as the thread's name
+                thread_name = first_line[:100]  # Limit to 100 characters (Discord's limit for thread names)
                 
                 # Create a thread from the original message
-                """
-                60: 1 hour
-                1440: 1 day (24 hours)
-                4320: 3 days
-                10080: 7 days
-                """
-                thread = await message.create_thread(name=thread_name, auto_archive_duration=10080)
+                thread = await message.create_thread(name=thread_name, auto_archive_duration=60)
                 
                 # Send the translated response in the newly created thread
                 results = []
