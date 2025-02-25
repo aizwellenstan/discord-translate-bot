@@ -1,6 +1,13 @@
 ```
 python3 -m pip install -r requirements.txt
 ```
+```
+sudo cp discord-translate-bot.service /etc
+/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl start bootstrap
+sudo systemctl status bootstrap.service
+```
 
 ### cert
 .com:443 ssl:True [SSLCertVerificationError: (1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')]
