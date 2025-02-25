@@ -63,7 +63,7 @@ async def on_message(message):
                 4320: 3 days
                 10080: 7 days
                 """
-                thread = await message.create_thread(name=thread_name, auto_archive_duration=40320)
+                thread = await message.create_thread(name=thread_name, auto_archive_duration=20160)
                 
                 # Send the translated response in the newly created thread
                 results = []
