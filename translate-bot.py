@@ -30,6 +30,7 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
+    # Prevent the bot from responding to itself
     if message.author == bot.user:
         return
     
@@ -42,33 +43,58 @@ async def on_message(message):
     user = message.author.name
     
     target_langs = ['ja', 'zh-tw', 'en']
-
-    # # Language Detection
-    # if any('\u3040' <= ch <= '\u30ff' or '\u4e00' <= ch <= '\u9fff' for ch in content):  # Japanese (Hiragana, Katakana, Kanji)
-    #     source_lang = 'ja'
-    #     target_langs = ['en', 'zh-tw']
-    # elif any('\u4e00' <= ch <= '\u9fff' for ch in content):  # Chinese
-    #     source_lang = 'zh-tw'
-    #     target_langs = ['en', 'ja']
-    # else:  # Default to English
-    #     source_lang = 'en'
-    #     target_langs = ['ja', 'zh-tw']
-
-    results = []
-    for target_lang in target_langs:
-        try:
-            result = await translator.translate(content, dest=target_lang)
-            result_text = result.text  # Extract translated text
-            results.append(f"**{target_lang.upper()}:** {result_text}")
-            log(user, server, channel, target_lang, content, result_text)
-        except Exception as e:
-            errMsg = f"Translation to {target_lang} failed. Error: {e}"
-            print("Error:", errMsg)
-            results.append(errMsg)
-            log(user, server, channel, target_lang, content, errMsg)
     
-    if results:
-        await message.reply("\n".join(results))
+    # Check if the bot is mentioned in the message
+    if bot.user.mentioned_in(message):
+        # Create a thread from the message and send reply in it
+        if message.channel.type == discord.ChannelType.text:
+            try:
+                # Create a thread from the original message
+                thread = await message.create_thread(name="New Thread", auto_archive_duration=60)
+                
+                # Send the translated response in the newly created thread
+                results = []
+                for target_lang in target_langs:
+                    try:
+                        result = await translator.translate(content, dest=target_lang)
+                        result_text = result.text  # Extract translated text
+                        results.append(f"**{target_lang.upper()}:** {result_text}")
+                        log(user, server, channel, target_lang, content, result_text)
+                    except Exception as e:
+                        errMsg = f"Translation to {target_lang} failed. Error: {e}"
+                        print("Error:", errMsg)
+                        results.append(errMsg)
+                        log(user, server, channel, target_lang, content, errMsg)
+
+                # Reply in the created thread
+                if results:
+                    await thread.send(content="\n".join(results))
+                await message.reply(f"Thread created: {thread.mention}")
+            except discord.Forbidden:
+                await message.reply("I do not have permission to create threads in this channel.")
+            return
+    else:
+        # Continue with translation (this part is unchanged) if bot is not mentioned
+        results = []
+        for target_lang in target_langs:
+            try:
+                result = await translator.translate(content, dest=target_lang)
+                result_text = result.text  # Extract translated text
+                results.append(f"**{target_lang.upper()}:** {result_text}")
+                log(user, server, channel, target_lang, content, result_text)
+            except Exception as e:
+                errMsg = f"Translation to {target_lang} failed. Error: {e}"
+                print("Error:", errMsg)
+                results.append(errMsg)
+                log(user, server, channel, target_lang, content, errMsg)
+
+        if results:
+            # If it's in a thread, reply in the thread
+            if message.thread:
+                await message.thread.send(content="\n".join(results))
+            else:
+                # Otherwise, reply in the main channel
+                await message.reply(content="\n".join(results))
 
 keep_alive()
 try:
