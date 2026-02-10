@@ -4,7 +4,7 @@ source venv/bin/activate
 python -m pip install -r requirements.txt
 ```
 ```
-sudo discord-translate-bot.service /etc/systemd/system/
+sudo cp discord-translate-bot.service /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable discord-translate-bot.service
 sudo systemctl start discord-translate-bot.service
