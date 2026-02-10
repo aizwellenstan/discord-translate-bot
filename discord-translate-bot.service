@@ -3,10 +3,11 @@ Description=discord-translate-bot
 After=network.target
 
 [Service]
-User=ubuntu
-ExecStart=/opt/discord-translate-bot/start.sh
-Restart=no
 Type=simple
+WorkingDirectory=/opt/discord-translate-bot
+ExecStart=/opt/discord-translate-bot/start.sh
+Restart=always
+Environment=PYTHONUNBUFFERED=1
 
 [Install]
 WantedBy=multi-user.target
