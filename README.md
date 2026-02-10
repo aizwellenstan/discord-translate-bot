@@ -2,11 +2,10 @@
 python3 -m pip install -r requirements.txt
 ```
 ```
-sudo cp discord-translate-bot.service /etc
-/systemd/system/
+sudo discord-translate-bot.service /etc/systemd/system/
 sudo systemctl daemon-reload
-sudo systemctl start bootstrap
-sudo systemctl status bootstrap.service
+sudo systemctl enable discord-translate-bot.service
+sudo systemctl start discord-translate-bot.service
 ```
 
 ### cert
