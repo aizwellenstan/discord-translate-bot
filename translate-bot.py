@@ -102,9 +102,9 @@ async def on_message(message):
             # If it's in a thread, reply in the thread
             if message.thread:
                 await message.thread.send(content="\n".join(results))
-            # else:
-            #     # Otherwise, reply in the main channel
-            #     await message.reply(content="\n".join(results))
+            else:
+                # Otherwise, reply in the main channel
+                await message.reply(content="\n".join(results))
 
 keep_alive()
 try:
