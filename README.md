@@ -10,6 +10,11 @@ sudo systemctl enable discord-translate-bot.service
 sudo systemctl start discord-translate-bot.service
 ```
 
+## debug
+```
+journalctl -u discord-translate-bot.service -f
+```
+
 ### cert
 .com:443 ssl:True [SSLCertVerificationError: (1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)')]
 ```
