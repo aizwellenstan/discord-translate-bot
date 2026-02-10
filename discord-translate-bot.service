@@ -5,7 +5,7 @@ After=network.target
 [Service]
 Type=simple
 WorkingDirectory=/opt/discord-translate-bot
-ExecStart=/opt/discord-translate-bot/start.sh
+ExecStart=/opt/discord-translate-bot/venv/bin/python translate-bot.py
 Restart=always
 Environment=PYTHONUNBUFFERED=1
 
